@@ -2,16 +2,19 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/guelfey/go.dbus"
-	"github.com/guelfey/go.dbus/introspect"
 	"os"
+
+	"github.com/khulnasoft/dbus"
+	"github.com/khulnasoft/dbus/introspect"
 )
 
 func main() {
-	conn, err := dbus.SessionBus()
+	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		panic(err)
 	}
+	defer conn.Close()
+
 	node, err := introspect.Call(conn.Object("org.freedesktop.DBus", "/org/freedesktop/DBus"))
 	if err != nil {
 		panic(err)

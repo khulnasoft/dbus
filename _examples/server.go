@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/guelfey/go.dbus"
-	"github.com/guelfey/go.dbus/introspect"
 	"os"
+
+	"github.com/khulnasoft/dbus"
+	"github.com/khulnasoft/dbus/introspect"
 )
 
 const intro = `
@@ -23,10 +24,17 @@ func (f foo) Foo() (string, *dbus.Error) {
 }
 
 func main() {
-	conn, err := dbus.SessionBus()
+	conn, err := dbus.ConnectSessionBus()
 	if err != nil {
 		panic(err)
 	}
+	defer conn.Close()
+
+	f := foo("Bar!")
+	conn.Export(f, "/com/github/guelfey/Demo", "com.github.guelfey.Demo")
+	conn.Export(introspect.Introspectable(intro), "/com/github/guelfey/Demo",
+		"org.freedesktop.DBus.Introspectable")
+
 	reply, err := conn.RequestName("com.github.guelfey.Demo",
 		dbus.NameFlagDoNotQueue)
 	if err != nil {
@@ -36,10 +44,6 @@ func main() {
 		fmt.Fprintln(os.Stderr, "name already taken")
 		os.Exit(1)
 	}
-	f := foo("Bar!")
-	conn.Export(f, "/com/github/guelfey/Demo", "com.github.guelfey.Demo")
-	conn.Export(introspect.Introspectable(intro), "/com/github/guelfey/Demo",
-		"org.freedesktop.DBus.Introspectable")
 	fmt.Println("Listening on com.github.guelfey.Demo / /com/github/guelfey/Demo ...")
 	select {}
 }
