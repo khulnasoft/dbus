@@ -1,5 +1,3 @@
-![Build Status](https://github.com/khulnasoft/dbus/workflows/Go/badge.svg)
-
 dbus
 ----
 
