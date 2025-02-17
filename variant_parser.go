@@ -379,6 +379,9 @@ func varParseString(s string) (string, error) {
 			if err != nil {
 				return "", err
 			}
+			if r > math.MaxInt32 {
+				return "", errors.New("unicode escape value out of range")
+			}
 			buf.WriteRune(rune(r))
 			s = s[8:]
 		default:
